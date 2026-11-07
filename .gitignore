@@ -1,0 +1,23 @@
+# 用户配置（含本机绝对路径，不入库）
+config.json
+
+# 运行时产物
+output/
+ref_pool/
+state/runs.jsonl
+state/params.json
+state/lessons.md
+_webjob_*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>H3 导演台 · 无限时长出片</title>
+<style>
+:root{
+  --bg:#0b0e14; --panel:#131826; --panel2:#1a2136; --line:#263048;
+  --txt:#e8ecf6; --dim:#8b95ad; --acc:#7c6cff; --acc2:#4dd6c1;
+  --ok:#4dd6a1; --warn:#ffb454; --bad:#ff6b7a; --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:15px/1.6 "Segoe UI","Microsoft YaHei",sans-serif;
+  background-image:radial-gradient(1200px 500px at 70% -10%, rgba(124,108,255,.14), transparent),
+                   radial-gradient(900px 400px at 10% 110%, rgba(77,214,193,.10), transparent);}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 6px 24px rgba(124,108,255,.35)}
+h1{font-size:22px;font-weight:700}
+header .sub{color:var(--dim);font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block;margin-right:6px}
+.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:18px}
+.card h2{font-size:15px;margin-bottom:14px;color:#c9d2ea;display:flex;align-items:center;gap:8px}
+.card h2 .n{width:22px;height:22px;border-radius:6px;background:var(--panel2);display:grid;place-items:center;font-size:12px;color:var(--acc2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tier{border:2px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;transition:.15s;background:var(--panel2)}
+.tier:hover{border-color:var(--acc)}
+.tier.sel{border-color:var(--acc);background:linear-gradient(160deg,rgba(124,108,255,.16),var(--panel2))}
+.tier b{display:block;font-size:15px}
+.tier span{font-size:12px;color:var(--dim)}
+.seg{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.seg .idx{min-width:34px;height:34px;border-radius:9px;background:var(--panel2);display:grid;place-items:center;color:var(--acc2);font-weight:700;font-size:13px}
+.seg textarea{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--txt);
+  padding:9px 12px;font:14px/1.5 inherit;resize:vertical;min-height:64px}
+.seg textarea:focus{outline:none;border-color:var(--acc)}
+.seg .del{border:none;background:none;color:var(--dim);font-size:17px;cursor:pointer;padding:6px}
+.seg .del:hover{color:var(--bad)}
+button.btn{background:linear-gradient(135deg,var(--acc),#5a8bff);border:none;color:#fff;border-radius:10px;
+  padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+button.btn:hover{filter:brightness(1.12)}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:var(--panel2);border:1px dashed var(--line);color:var(--dim);border-radius:10px;
+  padding:9px 18px;cursor:pointer;font-size:13px;width:100%}
+button.ghost:hover{border-color:var(--acc);color:var(--txt)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.field{flex:1;min-width:180px}
+.field label{display:block;font-size:12px;color:var(--dim);margin-bottom:5px}
+.field input,.field select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  color:var(--txt);padding:8px 11px;font-size:14px}
+.field input:focus{outline:none;border-color:var(--acc)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--dim);
+  cursor:pointer;transition:.15s;font-size:13px}
+.drop:hover,.drop.over{border-color:var(--acc2);color:var(--txt);background:rgba(77,214,193,.05)}
+.thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.thumb{position:relative;width:86px;height:86px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .x{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,.6);
+  color:#fff;border:none;cursor:pointer;font-size:11px;line-height:1}
+.switch{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--dim)}
+.switch input{accent-color:var(--acc);width:16px;height:16px}
+#log{background:#0a0d13;border:1px solid var(--line);border-radius:10px;padding:12px;height:220px;overflow-y:auto;
+  font:12px/1.7 Consolas,monospace;color:#9fb0d0;white-space:pre-wrap}
+.prog{height:8px;border-radius:6px;background:var(--panel2);overflow:hidden;margin:10px 0}
+.prog i{display:block;height:100%;width:0%;border-radius:6px;transition:width .5s;
+  background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.vcard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.vcard video{width:100%;aspect-ratio:16/9;background:#000;display:block}
+.vcard .cap{padding:9px 12px;font-size:12px;color:var(--dim);display:flex;justify-content:space-between;gap:8px}
+.vcard .cap b{color:var(--txt);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details summary{cursor:pointer;color:var(--dim);font-size:13px;user-select:none}
+details pre{margin-top:10px;background:#0a0d13;border:1px solid var(--line);border-radius:10px;padding:12px;
+  font:12px/1.7 Consolas,monospace;color:#9fb0d0;white-space:pre-wrap;max-height:300px;overflow-y:auto}
+.hint{font-size:12px;color:var(--dim);margin-top:8px}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(77,214,193,.12);color:var(--acc2);margin-left:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">🎬</div>
+  <div style="flex:1">
+    <h1>H3 导演台 <span class="tag">无限时长 · 无缝接力</span></h1>
+    <div class="sub">写分镜 → 拖参考图 → 点生成 → 直接看成片。每段 5 秒自动接力，段数不限。</div>
+  </div>
+  <div style="font-size:13px;color:var(--dim)"><span class="dot" id="comfyDot"></span>ComfyUI <span id="comfyTxt">检测中…</span></div>
+</header>
+
+<div class="grid2">
+<div>
+  <div class="card">
+    <h2><span class="n">1</span>选速度</h2>
+    <div class="tiers">
+      <div class="tier" data-tier="中">
+        <b>中档 ⭐默认</b><span>画质干净 · 台词清晰 · 无字幕<br>约 3 分钟/段 · 有对白必选这个</span>
+      </div>
+      <div class="tier" data-tier="低">
+        <b>低档 · 极速</b><span>约 2 分钟/段<br>只适合没台词的空镜/打斗</span>
+      </div>
+    </div>
+    <div class="tiers" style="margin-top:10px;grid-template-columns:1fr">
+      <div class="tier" data-tier="高">
+        <b>高档 · 三采 💎</b><span>768→1152→1280 三次采样精修，细节最满 · 约 11 分钟/段<br>要收藏级画质、能等就用这个</span>
+      </div>
+    </div>
+    <div class="hint">⚠ 台词段选极速档 = 说话含混 + 画面出字幕（实测）</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">2</span>参考图 <span style="font-weight:400;color:var(--dim);font-size:12px">（可拖多张，只对第 1 段生效，之后自动接力）</span></h2>
+    <div class="drop" id="drop">把角色 / 场景图拖到这里，或点击选择</div>
+    <input type="file" id="fileIn" accept="image/*" multiple hidden>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">3</span>分镜 <span style="font-weight:400;color:var(--dim);font-size:12px">（一格 = 5 秒，想拍多长加多少格）</span></h2>
+    <div id="segs"></div>
+    <button class="ghost" id="addSeg">＋ 加一段（5 秒）</button>
+    <div class="hint">写台词用引号（例如：他清晰地说：「站住。」）并放在格子前半段；环境音直接写进句子里（风声、人群声…）</div>
+  </div>
+</div>
+
+<div>
+  <div class="card">
+    <h2><span class="n">4</span>选项</h2>
+    <div class="row">
+      <div class="field"><label>任务名</label><input id="out" placeholder="我的成片"></div>
+      <div class="field"><label>随机种子（相同种子 = 相同画面风格）</label><input id="seed" type="number" placeholder="留空随机"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>负面向导（压画面里的怪东西，可选）</label><input id="negative" placeholder="字幕, 文字, 水印"></div>
+      <div class="field" style="flex:0 0 150px"><label>成片比例</label>
+        <select id="wide"><option value="">16:9 全屏</option><option value="2.35">2.35:1 电影宽幅（裁掉底部杂物）</option></select>
+      </div>
+      <div class="field" style="flex:0 0 150px"><label>交付分辨率</label>
+        <select id="res"><option value="">1280×720</option><option value="1080p">1920×1080（放大）</option><option value="1440p">2560×1440（放大）</option></select>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>配乐（可选，自动循环铺满并压低音量）</label>
+        <input id="audioFile" type="file" accept="audio/*" style="padding:6px">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">5</span>生成</h2>
+    <div class="row">
+      <button class="btn" id="go">🚀 开始生成</button>
+      <span id="elapsed" style="color:var(--dim);font-size:13px"></span>
+    </div>
+    <div class="prog"><i id="bar"></i></div>
+    <div id="log">就绪。点了「开始生成」后这里滚动显示进度。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">6</span>成片库 <button class="ghost" style="width:auto;padding:4px 12px" onclick="loadVideos()">刷新</button></h2>
+    <div class="vgrid" id="vgrid"></div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+  <details>
+    <summary>📚 引擎经验库（自动学习的坑与对策）· 引擎统计</summary>
+    <pre id="stats">…</pre>
+    <pre id="lessons">…</pre>
+  </details>
+</div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let tier = "中";
+let segCount = 0;
+
+// ---- ComfyUI 状态 ----
+fetch("/api/ping", {method:"POST", body:"{}"}).then(r=>r.json()).then(d=>{
+  $("#comfyDot").classList.toggle("on", d.comfy);
+  $("#comfyTxt").textContent = d.comfy ? "在线" : "离线（先启动 ComfyUI）";
+});
+
+// ---- 档位 ----
+document.querySelectorAll(".tier").forEach(el=>{
+  el.onclick = ()=>{ document.querySelectorAll(".tier").forEach(x=>x.classList.remove("sel"));
+    el.classList.add("sel"); tier = el.dataset.tier; };
+});
+document.querySelector('.tier[data-tier="中"]').classList.add("sel");
+
+// ---- 分镜段 ----
+function addSeg(text=""){
+  segCount++;
+  const div = document.createElement("div");
+  div.className = "seg";
+  div.innerHTML = `<div class="idx">${segCount}</div>
+    <textarea placeholder="这一段 5 秒发生什么…">${text}</textarea>
+    <button class="del" title="删除">✕</button>`;
+  div.querySelector(".del").onclick = ()=>{ div.remove(); renum(); };
+  $("#segs").appendChild(div);
+}
+function renum(){ document.querySelectorAll("#segs .seg .idx").forEach((el,i)=>el.textContent=i+1); }
+addSeg(); addSeg();
+$("#addSeg").onclick = ()=>addSeg();
+
+// ---- 参考图上传 ----
+const refs = [];
+const drop = $("#drop"), fileIn = $("#fileIn");
+drop.onclick = ()=>fileIn.click();
+drop.ondragover = e=>{e.preventDefault();drop.classList.add("over")};
+drop.ondragleave = ()=>drop.classList.remove("over");
+drop.ondrop = e=>{e.preventDefault();drop.classList.remove("over");handleFiles(e.dataTransfer.files)};
+fileIn.onchange = ()=>handleFiles(fileIn.files);
+function handleFiles(files){
+  [...files].filter(f=>f.type.startsWith("image/")).forEach(f=>{
+    const r = new FileReader();
+    r.onload = ()=>fetch("/api/upload",{method:"POST",body:JSON.stringify({name:f.name,data:r.result.split(",")[1]})})
+      .then(x=>x.json()).then(d=>{
+        refs.push(d.path);
+        const t = document.createElement("div");
+        t.className="thumb"; t.title=f.name;
+        t.innerHTML = `<img src="${r.result}"><button class="x">✕</button>`;
+        t.querySelector(".x").onclick = ()=>{ t.remove(); refs.splice(refs.indexOf(d.path),1); };
+        $("#thumbs").appendChild(t);
+      });
+  });
+}
+
+// ---- 配乐 ----
+let audioPath = null;
+$("#audioFile").onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>fetch("/api/upload",{method:"POST",body:JSON.stringify({name:f.name,data:r.result.split(",")[1]})})
+    .then(x=>x.json()).then(d=>{ audioPath = d.path; });
+};
+
+// ---- 生成 ----
+$("#go").onclick = ()=>{
+  const segs = [...document.querySelectorAll("#segs textarea")].map(t=>t.value.trim()).filter(Boolean);
+  if(!segs.length){ alert("至少写一段分镜"); return; }
+  const meta = { tier, out: $("#out").value.trim() || null, refs,
+    audio: audioPath, negative: $("#negative").value.trim() || null,
+    seed: $("#seed").value ? +$("#seed").value : null,
+    wide: $("#wide").value ? +$("#wide").value : null,
+    res: $("#res").value || null };
+  $("#go").disabled = true;
+  fetch("/api/start",{method:"POST",body:JSON.stringify({meta,segs})})
+    .then(r=>r.json()).then(d=>{ if(!d.ok){ alert(d.msg); $("#go").disabled=false; } });
+};
+
+// ---- 轮询进度 ----
+setInterval(()=>{
+  fetch("/api/status").then(r=>r.json()).then(d=>{
+    $("#log").textContent = d.log.join("\n");
+    $("#log").scrollTop = $("#log").scrollHeight;
+    $("#elapsed").textContent = d.running ? `进行中 ${Math.floor(d.elapsed/60)}分${d.elapsed%60}秒` : "";
+    // 粗进度：日志里每完成一段seg NN
+    const done = (d.log.join("\n").match(/seg\d+ 完成/g)||[]).length;
+    const plan = Math.max((d.log.join("\n").match(/seg\d+ \[/g)||[]).length, 1);
+    $("#bar").style.width = d.running ? Math.min(90, done/plan*100)+"%" : (done? "100%":"0%");
+    if(!d.running) $("#go").disabled = false;
+  });
+}, 2000);
+
+// ---- 成片库 ----
+function loadVideos(){
+  fetch("/api/videos").then(r=>r.json()).then(d=>{
+    $("#vgrid").innerHTML = d.videos.map(v=>{
+      const sz = (v.size/1048576).toFixed(1)+"MB";
+      const tm = new Date(v.mtime*1000).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+      return `<div class="vcard"><video controls preload="metadata" src="/api/media?path=${encodeURIComponent(v.path)}"></video>
+        <div class="cap"><b>${v.name}</b><span>${sz} · ${tm}</span></div></div>`;
+    }).join("") || `<div style="color:var(--dim);font-size:13px">还没有成片。生成完成后会出现在这里。</div>`;
+  });
+}
+loadVideos();
+
+// ---- 经验库/统计 ----
+Promise.all([fetch("/api/stats").then(r=>r.json()), fetch("/api/lessons").then(r=>r.json())]).then(([s,l])=>{
+  $("#stats").textContent = JSON.stringify(s.tiers, null, 1);
+  $("#lessons").textContent = l.lessons;
+});
+</script>
+</body>
+</html>

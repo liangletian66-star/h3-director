@@ -1,0 +1,11 @@
+# 用户配置：复制 config.example.json 改名为 config.json 再改
+{
+ "comfy_url": "http://127.0.0.1:8188",
+ "comfy_dir": "D:/ComfyUI",
+ "output_dir": "output",
+ "workflow": "workflows/h3_base_124f.json",
+ "lora_name": "pika_h3_flex_turbo_4step_fl2va_lite_r32.safetensors",
+ "latent_upscaler": "minimax_h3_latent_upscaler_3d_conv_v1_bf16.safetensors",
+ "ffmpeg": "ffmpeg",
+ "ffprobe": "ffprobe"
+}
