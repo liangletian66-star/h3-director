@@ -43,6 +43,9 @@ DEFAULTS = {
 def load_config(path=None):
     """读 config.json（缺省在仓库根），环境变量覆盖关键项。
 
+    配置文件允许写 # 开头的整行注释（JSON 本身不支持，这里先剥掉）——
+    手写配置时留个说明比翻文档快。
+
     环境变量：
       H3_COMFY_URL    ComfyUI 地址
       H3_COMFY_DIR    ComfyUI 根目录（必须能访问到 input/ 和 output/）
@@ -53,7 +56,14 @@ def load_config(path=None):
     p = path or os.path.join(HERE, "config.json")
     if os.path.exists(p):
         with open(p, encoding="utf-8") as f:
-            cfg.update(json.load(f))
+            raw = "\n".join(ln for ln in f.read().splitlines()
+                            if not ln.lstrip().startswith("#"))
+        try:
+            cfg.update(json.loads(raw))
+        except json.JSONDecodeError as e:
+            raise SystemExit(
+                f"[配置错误] {os.path.basename(p)} 第 {e.lineno} 行不是合法 JSON：{e.msg}\n"
+                f"  常见原因：多了逗号、用了单引号、路径里的反斜杠没转义（Windows 路径用 / 或 \\\\\\\\ ）")
     env_map = {"H3_COMFY_URL": "comfy_url", "H3_COMFY_DIR": "comfy_dir",
                "H3_OUTPUT_DIR": "output_dir", "H3_LORA": "lora_name"}
     for k, field in env_map.items():

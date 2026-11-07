@@ -1,5 +1,5 @@
-# 用户配置：复制 config.example.json 改名为 config.json 再改
 {
+ "_comment": "复制本文件为 config.json，改 comfy_dir 为你的 ComfyUI 根目录（能看到 input/ 和 output/ 的那一层）",
  "comfy_url": "http://127.0.0.1:8188",
  "comfy_dir": "D:/ComfyUI",
  "output_dir": "output",
